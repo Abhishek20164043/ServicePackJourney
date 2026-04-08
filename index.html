@@ -1,0 +1,288 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;display:flex;justify-content:center}
+.st{width:100%;max-width:680px;margin:0 auto;padding:0 16px;font-family:var(--font-sans,"Anthropic Sans",sans-serif)}
+.scene{display:none;animation:fadeIn .6s ease}.scene.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes walk{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes popBadge{from{opacity:0;transform:translateX(-8px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes pulseWait{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes rewindPulse{0%,100%{box-shadow:0 0 0 3px rgba(226,75,74,.25)}50%{box-shadow:0 0 0 8px rgba(226,75,74,.15)}}
+@keyframes amberRipple{0%{box-shadow:0 0 0 0 rgba(186,117,23,.5)}70%{box-shadow:0 0 0 12px rgba(186,117,23,0)}100%{box-shadow:0 0 0 0 rgba(186,117,23,0)}}
+@keyframes amberGlow{0%{background:rgba(250,238,218,0)}30%{background:rgba(250,238,218,1)}100%{background:rgba(250,238,218,.5)}}
+@keyframes costPop{0%{opacity:0;transform:scale(.8) translateY(4px)}60%{opacity:1;transform:scale(1.08) translateY(0)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes tickUp{0%{transform:scale(1)}30%{transform:scale(1.15)}100%{transform:scale(1)}}
+.hero{text-align:center;padding:40px 0 30px}
+.hero-num{font-size:64px;font-weight:500;color:var(--color-text-primary,#1a1a1a);line-height:1;margin-bottom:4px}
+.hero-unit{font-size:18px;color:var(--color-text-secondary,#666);margin-bottom:8px}
+.hero-sub{font-size:14px;color:var(--color-text-tertiary,#999);line-height:1.6;max-width:480px;margin:0 auto}
+.nb{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:13px;font-weight:500;padding:10px 24px;border-radius:var(--border-radius-md,8px);border:none;cursor:pointer;transition:all .2s;margin-top:16px}
+.nb.p{background:var(--color-text-info,#185FA5);color:#fff}.nb.p:hover{opacity:.9}
+.nb.g{background:transparent;border:0.5px solid var(--color-border-secondary,rgba(0,0,0,.3));color:var(--color-text-secondary,#666)}.nb.g:hover{background:var(--color-background-secondary,#f5f5f3)}
+.nr{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:16px;border-top:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.1))}
+.st-t{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-tertiary,#999);margin-bottom:8px}
+.st-h{font-size:20px;font-weight:500;color:var(--color-text-primary,#1a1a1a);margin-bottom:16px;line-height:1.3}
+.hb{padding:16px 20px;border-radius:var(--border-radius-lg,12px);margin:16px 0}
+.hb-green{background:#E1F5EE;color:#0F6E56}
+.hb-amber{background:#FAEEDA;color:#854F0B}
+.hb .hbt{font-size:13px;font-weight:500;margin-bottom:4px}
+.hb .hbb{font-size:12px;line-height:1.6;opacity:.85}
+.info-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:6px 12px;min-height:28px;flex-wrap:wrap}
+.info-bar .ib-day{font-size:13px;font-weight:500;color:var(--color-text-primary,#1a1a1a);transition:color .3s}
+.info-bar .ib-day.red{color:#E24B4A}
+.bn-pill{font-size:10px;color:#854F0B;background:#FAEEDA;padding:2px 8px;border-radius:20px;font-weight:500;display:none}
+.ex-pill{font-size:10px;color:#fff;background:#E24B4A;padding:2px 8px;border-radius:20px;font-weight:500;display:none}
+.tl{position:relative;padding:0 0 0 52px;margin:0 0 20px}
+.tl::before{content:'';position:absolute;left:20px;top:0;bottom:0;width:2px;background:var(--color-border-tertiary,rgba(0,0,0,.1));z-index:0}
+.person{position:absolute;left:6px;z-index:6;transition:top 1s cubic-bezier(.4,0,.2,1);width:30px;height:40px}
+.person.walking{animation:walk .5s ease infinite}
+.person.waiting{animation:pulseWait 1.5s ease infinite}
+.person.rewinding{transition:top 1.5s cubic-bezier(.6,0,.4,1);animation:rewindPulse .8s ease infinite}
+.person svg{width:30px;height:40px}
+.day-badge{position:absolute;left:-2px;z-index:7;transition:top 1s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.day-badge .db-pill{background:var(--color-text-info,#185FA5);color:#fff;font-size:10px;font-weight:500;padding:3px 8px;border-radius:10px;white-space:nowrap;transition:background .3s;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.day-badge .db-pill.red{background:#E24B4A}
+.day-badge .db-pill.tick{animation:tickUp .4s ease}
+.float-nav{position:absolute;right:0;z-index:8;transition:top 1s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;align-items:center;gap:2px}
+.fn-btn{font-family:inherit;font-size:13px;width:28px;height:28px;border-radius:50%;border:none;background:var(--color-background-secondary,#f5f5f3);color:var(--color-text-secondary,#666);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;padding:0}
+.fn-btn:hover{background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)}
+.fn-btn:disabled{opacity:.15;cursor:default;pointer-events:none}
+.fn-step{font-size:8px;color:var(--color-text-tertiary,#999);opacity:.5}
+.tl-node{position:relative;padding:0 0 24px;padding-right:40px;opacity:0;transform:translateY(8px);transition:all .4s ease}
+.tl-node.vis{opacity:1;transform:translateY(0)}
+.tl-node::before{content:'';position:absolute;left:-36px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--color-border-tertiary,rgba(0,0,0,.15));border:2px solid var(--color-background-primary,#fff);z-index:2;transition:background .3s}
+.tl-node.reached::before{background:#1D9E75}
+.tl-node.fail-node::before{background:#E24B4A}
+.tl-node.bn-active::before{background:#BA7517;animation:amberRipple 1s ease}
+.tl-node.reiter::before{background:#E24B4A}
+.tl-ms{display:inline-block;font-size:9px;font-weight:500;padding:2px 8px;border-radius:4px;margin-bottom:4px}
+.tl-week{font-size:11px;color:var(--color-text-tertiary,#999);margin-bottom:2px}
+.tl-title{font-size:13px;font-weight:500;color:var(--color-text-primary,#1a1a1a);margin-bottom:3px}
+.tl-desc{font-size:12px;color:var(--color-text-secondary,#666);line-height:1.5}
+.opt-tag{display:inline-block;font-size:9px;font-weight:500;padding:1px 6px;border-radius:4px;background:var(--color-background-secondary,#f5f5f3);color:var(--color-text-tertiary,#999);margin-left:6px;vertical-align:middle}
+.bottleneck-tag{display:none;margin-top:8px;padding:10px 12px;border-radius:var(--border-radius-md,8px);font-size:11px;line-height:1.5;animation:popBadge .4s ease both;position:relative;overflow:hidden}
+.bottleneck-tag::before{content:'';position:absolute;inset:0;animation:amberGlow 1.5s ease both;border-radius:var(--border-radius-md,8px);pointer-events:none}
+.bt-amber{background:#FAEEDA;color:#854F0B}
+.bt-red{background:#FCEBEB;color:#A32D2D}.bt-red::before{animation:none}
+.bt-blue{background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)}.bt-blue::before{animation:none}
+.bt-purple{background:#EEEDFE;color:#534AB7}.bt-purple::before{animation:none}
+.bt-icon{font-weight:500;margin-right:4px}
+.time-cost{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 10px;border-radius:20px;background:rgba(186,117,23,.15);color:#854F0B;font-size:10px;font-weight:500;animation:costPop .5s ease .3s both;border:1px solid rgba(186,117,23,.25)}
+.time-cost-val{font-size:12px;font-weight:500}
+.tc-red{background:rgba(226,75,74,.1);border-color:rgba(226,75,74,.25);color:#A32D2D}.tc-red .time-cost-val{color:#A32D2D}
+.tl-fail{display:none;margin-top:8px;padding:10px 14px;border-radius:var(--border-radius-md,8px);background:#FCEBEB;border-left:3px solid #E24B4A;animation:popBadge .4s ease both}
+.tl-fail .tf-t{font-size:12px;font-weight:500;color:#A32D2D;margin-bottom:3px}
+.tl-fail .tf-d{font-size:11px;color:#791F1F;line-height:1.5}
+.tl-rewind{display:none;margin-top:6px;font-size:11px;font-weight:500;color:#E24B4A;padding:5px 12px;border:1px dashed #E24B4A;border-radius:6px;width:fit-content;animation:popBadge .4s ease both}
+.sol{border-left:3px solid;padding:16px 18px;border-radius:0 var(--border-radius-lg,12px) var(--border-radius-lg,12px) 0;margin-bottom:14px;border-top:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.08));border-right:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.08));border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.08))}
+.sol .sh{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sol .si{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0}
+.sol .sn{font-size:15px;font-weight:500;color:var(--color-text-primary,#1a1a1a)}
+.sol .sd{font-size:12px;color:var(--color-text-secondary,#666);line-height:1.6}
+.sol .stag{display:inline-block;margin-top:8px;font-size:10px;font-weight:500;padding:3px 12px;border-radius:20px}
+.waterfall{margin:24px 0 16px}
+.wf-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.wf-label{width:90px;font-size:12px;color:var(--color-text-secondary,#666);text-align:right;flex-shrink:0}
+.wf-bars{flex:1;display:flex;gap:3px}
+.wf-bar{height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#fff;transition:width 1.5s cubic-bezier(.4,0,.2,1)}
+.wf-saved{font-size:11px;color:#1D9E75;font-weight:500;margin-left:8px;white-space:nowrap}
+.split-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+@media(max-width:480px){.split-compare{grid-template-columns:1fr}}
+.split-card{padding:20px;border-radius:var(--border-radius-lg,12px);text-align:center}
+.split-card.before{background:rgba(226,75,74,.06);border:0.5px solid rgba(226,75,74,.2)}
+.split-card.after{background:rgba(29,158,117,.06);border:0.5px solid rgba(29,158,117,.2)}
+.split-num{font-size:32px;font-weight:500;margin-bottom:4px}
+.split-label{font-size:12px;color:var(--color-text-secondary,#666)}
+.mode-sw{display:flex;justify-content:center;gap:8px;margin:20px 0 8px}
+.mode-sw button{font-family:inherit;font-size:11px;font-weight:400;padding:6px 16px;border-radius:20px;border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.15));background:transparent;color:var(--color-text-secondary,#666);cursor:pointer;transition:all .2s}
+.mode-sw button.on{background:var(--color-text-info,#185FA5);color:#fff;border-color:transparent}
+.pill{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:var(--border-radius-md,8px)}
+.pill-b{color:#185FA5;background:#E6F1FB}.pill-a{color:#854F0B;background:#FAEEDA}.pill-g{color:#0F6E56;background:#E1F5EE}.pill-r{color:#A32D2D;background:#FCEBEB}
+.hb-green{background:#E1F5EE;color:#0F6E56}
+.ref-section{margin-top:24px;padding-top:20px;border-top:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.1))}
+.ref-section h3{font-size:14px;font-weight:500;color:var(--color-text-primary,#1a1a1a);margin-bottom:12px}
+.phase-card{border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.12));border-radius:var(--border-radius-lg,12px);padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.phase-card:hover{border-color:var(--color-border-secondary,rgba(0,0,0,.3))}
+.phase-card.expanded .pc-detail{display:block}
+.pc-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pc-title{font-size:13px;font-weight:500;color:var(--color-text-primary,#1a1a1a)}
+.pc-sub{font-size:12px;color:var(--color-text-secondary,#666);margin-top:3px}
+.pc-detail{display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.08));font-size:12px;color:var(--color-text-secondary,#666);line-height:1.6}
+.pc-detail strong{font-weight:500;color:var(--color-text-primary,#1a1a1a)}
+.impact-card{border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.12));border-radius:var(--border-radius-lg,12px);padding:16px;margin-bottom:10px}
+.ic-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.ic-title{font-size:14px;font-weight:500;color:var(--color-text-primary,#1a1a1a)}
+.ic-nums{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ic-before{font-size:20px;color:var(--color-text-secondary,#666);text-decoration:line-through;text-decoration-color:rgba(226,75,74,.5)}
+.ic-after{font-size:20px;font-weight:500;color:#0F6E56}
+.ic-reason{font-size:12px;color:var(--color-text-secondary,#666);line-height:1.5;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.08))}
+.bar-track{height:8px;border-radius:4px;background:var(--color-background-secondary,#f5f5f3);margin-top:8px;display:flex;overflow:hidden;gap:2px}
+.bar-seg{height:100%;border-radius:4px}
+.reiter-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0;padding:10px;background:var(--color-background-secondary,#f5f5f3);border-radius:var(--border-radius-md,8px)}
+.rf-step{font-size:11px;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.rf-arr{color:var(--color-text-tertiary,#999);font-size:14px}
+.rf-loop{color:#A32D2D;font-size:11px;font-weight:500;padding:4px 10px;border:1px dashed #E24B4A;border-radius:6px}
+</style>
+
+<div class="st">
+<div class="mode-sw"><button class="on" id="mS" onclick="setMode('story')">Story mode</button><button id="mD" onclick="setMode('detail')">Detailed breakdown</button></div>
+<div id="storyMode">
+<div class="scene active" id="sc0">
+<div class="hero"><div class="hero-num" id="heroNum">35</div><div class="hero-unit">days to release a service pack</div><div class="hero-sub">Scope freeze to GA — that's the active release window. But where does this time actually go? Let's follow a service pack engineer through a typical release cycle.</div><button class="nb p" onclick="goTo(1)">Follow the engineer &rarr;</button></div>
+</div>
+
+<div class="scene" id="sc1">
+<div class="st-t">A typical service pack release</div><div class="st-h">The engineer's journey — scope freeze to GA</div>
+<div class="info-bar"><div class="ib-day" id="ibDay">Day 0</div><div class="bn-pill" id="bnTot"></div><div class="ex-pill" id="exD"></div></div>
+
+<div class="tl" id="tl">
+<div class="person" id="eng" style="top:0"><svg viewBox="0 0 30 40" fill="none"><circle cx="15" cy="8" r="6" fill="var(--color-text-info,#185FA5)"/><path d="M15 14C11 14 8 17 8 21V28C8 29 9 30 10 30H12V37C12 38.5 13.5 40 15 40C16.5 40 18 38.5 18 37V30H20C21 30 22 29 22 28V21C22 17 19 14 15 14Z" fill="var(--color-text-info,#185FA5)"/></svg></div>
+<div class="day-badge" id="dayBadge" style="top:42px"><div class="db-pill" id="dayPill">Day 0</div></div>
+
+<div class="float-nav" id="floatNav" style="top:0">
+<button class="fn-btn" id="btnBack" onclick="stepBack()" disabled>&uarr;</button>
+<div class="fn-step" id="stepLbl">1/17</div>
+<button class="fn-btn" id="btnFwd" onclick="stepFwd()">&darr;</button>
+</div>
+
+<div class="tl-node" id="t0"><div class="tl-ms pill pill-b">Scope freeze</div><div class="tl-week">Week 0</div><div class="tl-title">Scope is frozen. Your clock starts.</div><div class="tl-desc">All feature work finalized. Release blockers need resolution.</div></div>
+<div class="tl-node" id="t1"><div class="tl-week">Week 0-1</div><div class="tl-title">Job creation and pipeline setup <span class="opt-tag">when needed</span></div><div class="tl-desc">New SP versions may require new Jenkins jobs — updated version parameters, configs, branch references. Not every cycle needs this, but when it does, it's entirely manual.</div><div class="bottleneck-tag bt-amber" id="b1"><span class="bt-icon">Bottleneck:</span> Manual job creation — 12-16 hrs of templated, repeatable setup work when new jobs are needed<div class="time-cost"><span class="time-cost-val">~2 days consumed</span> by work that could be automated</div></div></div>
+<div class="tl-node" id="t2"><div class="tl-week">Week 1</div><div class="tl-title">Service pack jobs start running</div><div class="tl-desc">~28 jobs on ~20 AWS nodes. Only 3-4 per day. You monitor, wait, context-switch.</div><div class="bottleneck-tag bt-blue" id="b2"><span class="bt-icon">Bottleneck:</span> Limited parallelism — ~28 jobs on 20 nodes, sequential execution<div class="time-cost"><span class="time-cost-val">~5 days of waiting</span> on infra that could run more in parallel</div></div></div>
+<div class="tl-node" id="t3"><div class="tl-week">Week 2</div><div class="tl-title">First pass done. Failures surfaced.</div><div class="tl-desc">Initial run reveals issues across multiple pipelines.</div><div class="bottleneck-tag bt-amber" id="b3"><span class="bt-icon">Bottleneck:</span> Manual debugging — 50-60% of effort finding patterns across 25+ jobs, no centralized view<div class="time-cost"><span class="time-cost-val">~4-5 hrs per failure</span> scanning fragmented logs</div></div><div class="tl-fail" id="f3"><div class="tf-t">3 jobs failed across different pipelines</div><div class="tf-d">Same failure types repeat cycle after cycle. No system learns from past fixes.</div></div></div>
+<div class="tl-node" id="t4"><div class="tl-ms pill pill-b">RCS</div><div class="tl-week">Week 2 end</div><div class="tl-title">Release Candidate Submit</div><div class="tl-desc">Blockers resolved. Certification testing begins.</div></div>
+<div class="tl-node" id="t5"><div class="tl-week">Week 3</div><div class="tl-title">Certification testing + dependent teams sign-off</div><div class="tl-desc">Full manual + automated test suite. Dependent teams validate and formally sign off.</div><div class="bottleneck-tag bt-purple" id="b5"><span class="bt-icon">Bottleneck:</span> Long test iterations on limited infra — any failure forces a complete re-run. Sign-off adds coordination overhead<div class="time-cost"><span class="time-cost-val">Each full pass = days</span> — no partial re-test possible</div></div><div class="tl-fail" id="f5"><div class="tf-t">Critical test failure late in the pass</div><div class="tf-d">Regression from a dependency update. Bug fix PR merged — sign-off invalidated.</div></div><div class="tl-rewind" id="r5">New code in the build — full test cycle + sign-off restarts</div></div>
+<div class="tl-node" id="t5b"><div class="tl-week" style="color:#E24B4A">Re-iteration</div><div class="tl-title" style="color:#E24B4A">Back to the beginning of the test pass</div><div class="tl-desc">Entire suite re-runs. Dependent teams must re-validate and sign off again.</div><div class="bottleneck-tag bt-red" id="b5b"><span class="bt-icon">Compounding:</span> Slow infra + manual debugging + re-iteration + re-sign-off = multiplied cost<div class="time-cost tc-red"><span class="time-cost-val">~2 days burned</span> — bottlenecks feed each other</div></div></div>
+<div class="tl-node" id="t6"><div class="tl-ms pill pill-a">RCD</div><div class="tl-week">Week 3-4</div><div class="tl-title">Release Candidate Declared</div><div class="tl-desc">Dependent teams have signed off. Only show-stopper fixes from here.</div></div>
+<div class="tl-node" id="t7"><div class="tl-week">Week 4</div><div class="tl-title">Final quality gate</div><div class="tl-desc">Targeted validation of the exact bits shipping.</div><div class="bottleneck-tag bt-amber" id="b7"><span class="bt-icon">Bottleneck:</span> Fragmented visibility — 25-30% of triage time lost to context-switching<div class="time-cost"><span class="time-cost-val">5-6 on-call issues/week</span> adding to load</div></div><div class="tl-fail" id="f7"><div class="tf-t">Show-stopper found post-RCD</div><div class="tf-d">Critical upgrade path issue. Emergency fix + re-RCD.</div></div><div class="tl-rewind" id="r7">Emergency fix — targeted re-test triggered</div></div>
+<div class="tl-node" id="t7b"><div class="tl-week" style="color:#E24B4A">Re-iteration</div><div class="tl-title" style="color:#E24B4A">Emergency fix verified. Re-RCD required.</div><div class="tl-desc">More days consumed.</div></div>
+<div class="tl-node" id="t8"><div class="tl-ms pill" style="background:var(--color-background-secondary,#f5f5f3);color:var(--color-text-primary,#1a1a1a)">GM</div><div class="tl-week">Week 4-5</div><div class="tl-title">Gold Master</div><div class="tl-desc">The immutable binary.</div></div>
+<div class="tl-node" id="t9"><div class="tl-week">Week 5</div><div class="tl-title">Release prep</div><div class="tl-desc">Docs, notes, field guidance.</div></div>
+<div class="tl-node" id="t10"><div class="tl-ms pill pill-g">GA</div><div class="tl-week">Week 5-6</div><div class="tl-title">General Availability</div><div class="tl-desc">The service pack is live.</div></div>
+</div>
+<div id="sumBox" style="display:none"></div>
+<div class="nr"><button class="nb g" onclick="goTo(0)">&larr; Back</button><button class="nb p" onclick="goTo(2)" id="btnN" style="display:none">What we're changing &rarr;</button></div>
+</div>
+
+<div class="scene" id="sc2">
+<div class="st-t">The plan</div><div class="st-h">Three interventions targeting every bottleneck</div>
+<div class="sol" style="border-left-color:#1D9E75"><div class="sh"><div class="si" style="background:#E1F5EE;color:#0F6E56">1</div><div class="sn">AI-powered build analyzer + RAG debugging</div></div><div class="sd">Eliminates blind log scanning. Centralized failure view, historical pattern matching, instant context.</div><div class="stag" style="background:#E1F5EE;color:#0F6E56">Targets: manual debugging, fragmented visibility, slow triage</div></div>
+<div class="sol" style="border-left-color:#185FA5"><div class="sh"><div class="si" style="background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)">2</div><div class="sn">Automated job creation via Claude / Cursor rules</div></div><div class="sd">12-16 hrs of manual setup becomes 3-5 hrs. Skills-based automation, repeatable.</div><div class="stag" style="background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)">Targets: manual job creation overhead</div></div>
+<div class="sol" style="border-left-color:#534AB7"><div class="sh"><div class="si" style="background:#EEEDFE;color:#534AB7">3</div><div class="sn">EC2 scaling — 20 to 100 nodes</div></div><div class="sd">More jobs simultaneously. Every iteration and re-iteration finishes faster.</div><div class="stag" style="background:#EEEDFE;color:#534AB7">Targets: sequential builds, long iterations, re-iteration cost</div></div>
+<div style="margin-top:28px"><div class="st-t">Expected savings</div></div>
+<div class="waterfall">
+<div class="wf-row"><div class="wf-label">Job creation</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w0">14 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w0a">4 hrs</div></div><div class="wf-saved" id="ws0" style="opacity:0">&darr;60%</div></div>
+<div class="wf-row"><div class="wf-label">Debugging</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w1">5 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w1a">2.5 hrs</div></div><div class="wf-saved" id="ws1" style="opacity:0">&darr;50%</div></div>
+<div class="wf-row"><div class="wf-label">Build time</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w2">~19 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w2a">~15 hrs</div></div><div class="wf-saved" id="ws2" style="opacity:0">&darr;20%</div></div>
+<div class="wf-row"><div class="wf-label">Triaging</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w3">2 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w3a">1.25 hrs</div></div><div class="wf-saved" id="ws3" style="opacity:0">&darr;25%</div></div>
+</div>
+<div class="split-compare"><div class="split-card before"><div class="split-num" style="color:#E24B4A">35–40d</div><div class="split-label">Current SP cycle</div></div><div class="split-card after"><div class="split-num" style="color:#1D9E75">~25–30d</div><div class="split-label">Target SP cycle</div></div></div>
+<div class="hb hb-green"><div class="hbt">Quality gates stay. Structural waste goes.</div><div class="hbb">RCS, RCD, GM, GA all remain. What changes is manual work, sequential builds, and blind debugging between them.</div></div>
+<div style="text-align:center;margin-top:20px"><button class="nb g" onclick="goTo(1)">&larr; Back to timeline</button>&nbsp;&nbsp;<button class="nb p" onclick="setMode('detail')">Detailed breakdown &rarr;</button></div>
+</div>
+</div>
+
+<div id="detailMode" style="display:none">
+<div class="ref-section" style="border:none;padding-top:0"><h3>Release pipeline — phase detail</h3>
+<div class="phase-card" onclick="this.classList.toggle('expanded')"><div class="pc-head"><div class="pc-title">Phase 1: Scope freeze → RCS</div><div class="pill pill-b">2 weeks</div></div><div class="pc-sub">Freeze scope, resolve blockers, run SP jobs</div><div class="pc-detail"><strong>What happens:</strong> Scope frozen. New jobs created when needed. ~28 jobs run sequentially on ~20 nodes.<br><br><strong>Key bottlenecks:</strong> Manual job creation (12-16 hrs when needed), limited parallelism, manual debugging.</div></div>
+<div class="phase-card" onclick="this.classList.toggle('expanded')"><div class="pc-head"><div class="pc-title">Phase 2: RCS → RCD</div><div class="pill pill-r">1 week — highest risk</div></div><div class="pc-sub">Certification testing + dependent teams sign-off</div><div class="pc-detail"><strong>Key risk:</strong> Any bug fix PR invalidates test pass and sign-off.<div class="reiter-flow"><span class="rf-step" style="background:#E6F1FB;color:#185FA5">Test + sign-off</span><span class="rf-arr">&rarr;</span><span class="rf-step" style="background:#FCEBEB;color:#A32D2D">Failure</span><span class="rf-arr">&rarr;</span><span class="rf-step" style="background:#FAEEDA;color:#854F0B">Triage</span><span class="rf-arr">&rarr;</span><span class="rf-step" style="background:#EEEDFE;color:#534AB7">PR</span><span class="rf-arr">&rarr;</span><span class="rf-loop">Re-run + re-sign-off</span></div></div></div>
+<div class="phase-card" onclick="this.classList.toggle('expanded')"><div class="pc-head"><div class="pc-title">Phase 3: RCD → GM</div><div class="pill pill-a">1 week</div></div><div class="pc-sub">Final quality gate</div><div class="pc-detail">Show-stopper post-RCD can add another week.</div></div>
+<div class="phase-card" onclick="this.classList.toggle('expanded')"><div class="pc-head"><div class="pc-title">Phase 4: GM → GA</div><div class="pill pill-g">1 week</div></div><div class="pc-sub">Documentation, distribution</div><div class="pc-detail">Fixed overhead.</div></div></div>
+<div class="ref-section"><h3>Expected impact</h3>
+<div class="impact-card"><div class="ic-head"><div class="ic-title">Job creation</div><span class="pill pill-g">&darr;60%</span></div><div class="ic-nums"><span class="ic-before">12–16 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">3–5 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:40%;background:#1D9E75"></div><div class="bar-seg" style="width:60%;background:rgba(226,75,74,.2)"></div></div></div>
+<div class="impact-card"><div class="ic-head"><div class="ic-title">Debugging</div><span class="pill pill-g">&darr;50%</span></div><div class="ic-nums"><span class="ic-before">~5 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">2–3 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:50%;background:#1D9E75"></div><div class="bar-seg" style="width:50%;background:rgba(226,75,74,.2)"></div></div></div>
+<div class="impact-card"><div class="ic-head"><div class="ic-title">Triaging</div><span class="pill pill-a">&darr;25%</span></div><div class="ic-nums"><span class="ic-before">~2 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">1–1.5 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:70%;background:#1D9E75"></div><div class="bar-seg" style="width:30%;background:rgba(226,75,74,.2)"></div></div></div>
+<div class="impact-card"><div class="ic-head"><div class="ic-title">Build time</div><span class="pill pill-a">&darr;20%</span></div><div class="ic-nums"><span class="ic-before">~19 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">~15 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:79%;background:#1D9E75"></div><div class="bar-seg" style="width:21%;background:rgba(226,75,74,.2)"></div></div></div></div>
+<div style="text-align:center;margin:24px 0"><button class="nb g" onclick="setMode('story')">Back to story mode</button></div>
+</div>
+</div>
+
+<script>
+var sidx=0,bnHrs=0,wfRan=false,counted=false;
+var steps=[
+{day:'Day 0',node:'t0',eng:'t0',st:'walking',bn:null,bh:0,fail:null,rw:null,ri:false,ex:null},
+{day:'Day 3',node:'t1',eng:'t1',st:'waiting',bn:'b1',bh:16,fail:null,rw:null,ri:false,ex:null},
+{day:'Day 7',node:'t2',eng:'t2',st:'waiting',bn:'b2',bh:40,fail:null,rw:null,ri:false,ex:null},
+{day:'Day 12',node:'t3',eng:'t3',st:'waiting',bn:'b3',bh:5,fail:'f3',rw:null,ri:false,ex:null},
+{day:'Day 14',node:'t4',eng:'t4',st:'walking',bn:null,bh:0,fail:null,rw:null,ri:false,ex:null},
+{day:'Day 17',node:'t5',eng:'t5',st:'waiting',bn:'b5',bh:19,fail:null,rw:null,ri:false,ex:null},
+{day:'Day 17',node:null,eng:'t5',st:'waiting',bn:null,bh:0,fail:'f5',rw:'r5',ri:false,ex:null},
+{day:'Rewinding...',node:'t5b',eng:'t4',st:'rewinding',bn:null,bh:0,fail:null,rw:null,ri:true,ex:'+2 days'},
+{day:'Day 19',node:null,eng:'t5b',st:'walking',bn:'b5b',bh:0,fail:null,rw:null,ri:false,ex:'+2 days'},
+{day:'Day 23',node:'t6',eng:'t6',st:'walking',bn:null,bh:0,fail:null,rw:null,ri:false,ex:'+2 days'},
+{day:'Day 26',node:'t7',eng:'t7',st:'waiting',bn:'b7',bh:5,fail:null,rw:null,ri:false,ex:'+2 days'},
+{day:'Day 26',node:null,eng:'t7',st:'waiting',bn:null,bh:0,fail:'f7',rw:'r7',ri:false,ex:'+2 days'},
+{day:'Rewinding...',node:'t7b',eng:'t6',st:'rewinding',bn:null,bh:0,fail:null,rw:null,ri:true,ex:'+4 days'},
+{day:'Day 28',node:null,eng:'t7b',st:'walking',bn:null,bh:0,fail:null,rw:null,ri:false,ex:'+4 days'},
+{day:'Day 30',node:'t8',eng:'t8',st:'walking',bn:null,bh:0,fail:null,rw:null,ri:false,ex:'+4 days'},
+{day:'Day 35',node:'t9',eng:'t9',st:'walking',bn:null,bh:0,fail:null,rw:null,ri:false,ex:'+4 days'},
+{day:'Day 39',node:'t10',eng:'t10',st:'',bn:null,bh:0,fail:null,rw:null,ri:false,ex:'+4 days',fin:true}
+];
+var total=steps.length;
+
+function posAll(engId){
+var el=document.getElementById(engId);if(!el)return;
+var t=el.offsetTop;
+document.getElementById('eng').style.top=(t-8)+'px';
+document.getElementById('eng').className='person '+(steps[sidx].st||'');
+document.getElementById('dayBadge').style.top=(t+42)+'px';
+document.getElementById('floatNav').style.top=t+'px';
+}
+
+function updUI(){
+document.getElementById('stepLbl').textContent=(sidx+1)+'/'+total;
+document.getElementById('btnBack').disabled=(sidx===0);
+document.getElementById('btnFwd').disabled=(sidx>=total-1);
+document.getElementById('btnN').style.display=steps[sidx].fin?'':'none';
+document.getElementById('sumBox').style.display=steps[sidx].fin?'':'none';
+var s=steps[sidx];
+var dp=document.getElementById('dayPill');
+dp.textContent=s.day;dp.classList.remove('tick','red');void dp.offsetWidth;dp.classList.add('tick');
+if(s.ri||s.day.indexOf('Rewind')>=0)dp.classList.add('red');
+document.getElementById('ibDay').textContent=s.day;
+document.getElementById('ibDay').classList.toggle('red',!!(s.ri||s.day.indexOf('Rewind')>=0));
+var bn=document.getElementById('bnTot');
+if(bnHrs>0){bn.textContent='~'+bnHrs+' hrs in bottlenecks';bn.style.display=''}else bn.style.display='none';
+var ex=document.getElementById('exD');
+if(s.ex){ex.textContent=s.ex;ex.style.display=''}else ex.style.display='none';
+}
+
+function applyStep(i){
+var s=steps[i];
+if(s.node){var el=document.getElementById(s.node);el.classList.add('vis','reached');if(s.ri)el.classList.add('reiter')}
+if(s.bn){document.getElementById(s.bn).style.display='';if(s.node)document.getElementById(s.node).classList.add('bn-active')}
+if(s.bh>0)bnHrs+=s.bh;
+if(s.fail){document.getElementById(s.fail).style.display='';var fn=s.node||(i>0?steps[i-1].node:null);if(fn)document.getElementById(fn).classList.add('fail-node')}
+if(s.rw)document.getElementById(s.rw).style.display='';
+if(s.fin){document.getElementById('sumBox').innerHTML='<div class="hb hb-amber"><div class="hbt">~85 hours in structural bottlenecks. +4 days in re-iterations. Every cycle.</div><div class="hbb">Manual job creation, sequential builds, fragmented debugging, and re-iterations that forced the engineer through it all again.</div></div>'}
+posAll(s.eng);updUI();
+}
+
+function undoStep(i){
+var s=steps[i];
+if(s.node){var el=document.getElementById(s.node);el.classList.remove('vis','reached','fail-node','bn-active','reiter')}
+if(s.bn)document.getElementById(s.bn).style.display='none';
+if(s.bh>0)bnHrs-=s.bh;
+if(s.fail){document.getElementById(s.fail).style.display='none';var fn=s.node||(i>0?steps[i-1].node:null);if(fn)document.getElementById(fn).classList.remove('fail-node')}
+if(s.rw)document.getElementById(s.rw).style.display='none';
+}
+
+function stepFwd(){if(sidx>=total-1)return;sidx++;applyStep(sidx)}
+function stepBack(){if(sidx<=0)return;undoStep(sidx);sidx--;posAll(steps[sidx].eng);updUI()}
+function resetTL(){for(var i=sidx;i>=0;i--)undoStep(i);sidx=0;bnHrs=0;applyStep(0)}
+
+function goTo(i){
+if(i===1)resetTL();
+document.querySelectorAll('.scene').forEach(function(s,j){s.classList.toggle('active',j===i)});
+if(i===2&&!wfRan){wfRan=true;
+[{id:'w0',w:'70%',id2:'w0a',w2:'20%',s:'ws0'},{id:'w1',w:'25%',id2:'w1a',w2:'12.5%',s:'ws1'},{id:'w2',w:'95%',id2:'w2a',w2:'75%',s:'ws2'},{id:'w3',w:'10%',id2:'w3a',w2:'6%',s:'ws3'}].forEach(function(d,i){
+setTimeout(function(){document.getElementById(d.id).style.width=d.w;setTimeout(function(){document.getElementById(d.id2).style.width=d.w2;document.getElementById(d.s).style.opacity='1'},800)},i*400)})}}
+
+function setMode(m){
+document.getElementById('storyMode').style.display=m==='story'?'':'none';
+document.getElementById('detailMode').style.display=m==='detail'?'':'none';
+document.getElementById('mS').classList.toggle('on',m==='story');
+document.getElementById('mD').classList.toggle('on',m==='detail')}
+
+var obs=new IntersectionObserver(function(e){if(e[0].isIntersecting&&!counted){counted=true;var v=0;var s=function(){v+=1;if(v>35)v=35;document.getElementById('heroNum').textContent=v;if(v<35)requestAnimationFrame(s)};requestAnimationFrame(s)}});
+obs.observe(document.getElementById('heroNum'));
+</script>
