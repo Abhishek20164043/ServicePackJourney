@@ -55,6 +55,10 @@ html,body{width:100%;display:flex;justify-content:center}
 .tl-node.fail-node::before{background:#E24B4A}
 .tl-node.bn-active::before{background:#BA7517;animation:amberRipple 1s ease}
 .tl-node.reiter::before{background:#E24B4A}
+.tl.expanded .tl-node{opacity:1;transform:translateY(0)}.tl.expanded .tl-node::before{background:#1D9E75}
+.tl.expanded .tl-node.fail-node::before{background:#E24B4A}.tl.expanded .tl-node.reiter::before{background:#E24B4A}.tl.expanded .tl-node.bn-active::before{background:#BA7517}
+.tl.expanded .float-nav,.tl.expanded .person,.tl.expanded .day-badge{display:none}
+.tl.expanded .bottleneck-tag,.tl.expanded .tl-fail,.tl.expanded .tl-rewind{display:block!important}
 .tl-ms{display:inline-block;font-size:9px;font-weight:500;padding:2px 8px;border-radius:4px;margin-bottom:4px}
 .tl-week{font-size:11px;color:var(--color-text-tertiary,#999);margin-bottom:2px}
 .tl-title{font-size:13px;font-weight:500;color:var(--color-text-primary,#1a1a1a);margin-bottom:3px}
@@ -132,7 +136,7 @@ html,body{width:100%;display:flex;justify-content:center}
 </div>
 
 <div class="scene" id="sc1">
-<div class="st-t">A typical service pack release</div><div class="st-h">The engineer's journey — scope freeze to GA</div>
+<div class="st-t">A typical service pack release</div><div class="st-h" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">The engineer's journey — scope freeze to GA<button class="nb g" id="expandBtn" onclick="toggleExpand()" style="margin-top:0;font-size:11px;padding:7px 16px">Show full timeline ↓</button></div>
 <div class="info-bar"><div class="ib-day" id="ibDay">Day 0</div><div class="bn-pill" id="bnTot"></div><div class="ex-pill" id="exD"></div></div>
 
 <div class="tl" id="tl">
@@ -175,7 +179,7 @@ html,body{width:100%;display:flex;justify-content:center}
 <div class="wf-row"><div class="wf-label">Build time</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w2">~19 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w2a">~15 hrs</div></div><div class="wf-saved" id="ws2" style="opacity:0">&darr;20%</div></div>
 <div class="wf-row"><div class="wf-label">Triaging</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w3">2 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w3a">1.25 hrs</div></div><div class="wf-saved" id="ws3" style="opacity:0">&darr;25%</div></div>
 </div>
-<div class="split-compare"><div class="split-card before"><div class="split-num" style="color:#E24B4A">35–40d</div><div class="split-label">Current SP cycle</div></div><div class="split-card after"><div class="split-num" style="color:#1D9E75">~25–30d</div><div class="split-label">Target SP cycle</div></div></div>
+<div class="split-compare"><div class="split-card before"><div class="split-num" style="color:#E24B4A">35–40d</div><div class="split-label">Current SP cycle</div></div><div class="split-card after"><div class="split-num" style="color:#1D9E75">~23–27d</div><div class="split-label">Target SP cycle</div></div></div>
 <div class="hb hb-green"><div class="hbt">Quality gates stay. Structural waste goes.</div><div class="hbb">RCS, RCD, GM, GA all remain. What changes is manual work, sequential builds, and blind debugging between them.</div></div>
 <div style="text-align:center;margin-top:20px"><button class="nb g" onclick="goTo(1)">&larr; Back to timeline</button>&nbsp;&nbsp;<button class="nb p" onclick="setMode('detail')">Detailed breakdown &rarr;</button></div>
 </div>
@@ -266,8 +270,26 @@ if(s.fail){document.getElementById(s.fail).style.display='none';var fn=s.node||(
 if(s.rw)document.getElementById(s.rw).style.display='none';
 }
 
-function stepFwd(){if(sidx>=total-1)return;sidx++;applyStep(sidx)}
-function stepBack(){if(sidx<=0)return;undoStep(sidx);sidx--;posAll(steps[sidx].eng);updUI()}
+var expanded=false;
+function toggleExpand(){
+  var tl=document.getElementById('tl');
+  var btn=document.getElementById('expandBtn');
+  expanded=!expanded;
+  if(expanded){
+    tl.classList.add('expanded');
+    btn.textContent='Step-by-step ↑';
+    document.getElementById('sumBox').innerHTML='<div class="hb hb-amber"><div class="hbt">~85 hours in structural bottlenecks. +4 days in re-iterations. Every cycle.</div><div class="hbb">Manual job creation, sequential builds, fragmented debugging, and re-iterations that forced the engineer through it all again.</div></div>';
+    document.getElementById('sumBox').style.display='';
+    document.getElementById('btnN').style.display='';
+  }else{
+    tl.classList.remove('expanded');
+    btn.textContent='Show full timeline ↓';
+    for(var i=sidx;i>=0;i--)undoStep(i);
+    sidx=0;bnHrs=0;applyStep(0);
+  }
+}
+function stepFwd(){if(expanded||sidx>=total-1)return;sidx++;applyStep(sidx)}
+function stepBack(){if(expanded||sidx<=0)return;undoStep(sidx);sidx--;posAll(steps[sidx].eng);updUI()}
 function resetTL(){for(var i=sidx;i>=0;i--)undoStep(i);sidx=0;bnHrs=0;applyStep(0)}
 
 function goTo(i){
