@@ -126,10 +126,45 @@ html,body{width:100%;display:flex;justify-content:center}
 .rf-step{font-size:11px;padding:4px 10px;border-radius:6px;white-space:nowrap}
 .rf-arr{color:var(--color-text-tertiary,#999);font-size:14px}
 .rf-loop{color:#A32D2D;font-size:11px;font-weight:500;padding:4px 10px;border:1px dashed #E24B4A;border-radius:6px}
+
+.arch-section{padding:8px 0 40px}
+.arch-title{font-size:20px;font-weight:500;color:var(--color-text-primary,#1a1a1a);margin-bottom:4px}
+.arch-sub{font-size:13px;color:var(--color-text-tertiary,#999);margin-bottom:24px}
+.arch-layer{margin-bottom:10px}
+.arch-box{border-radius:var(--border-radius-lg,12px);padding:14px 18px;text-align:center;transition:transform .2s,box-shadow .2s}
+.arch-box:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.arch-box .ab-title{font-size:14px;font-weight:500;margin-bottom:2px}
+.arch-box .ab-sub{font-size:12px;line-height:1.5;opacity:.75}
+.arch-conn{display:flex;justify-content:center;padding:5px 0}
+.arch-conn .ac-line{width:2px;height:18px;border-radius:1px}
+.arch-fan{position:relative;height:28px;margin:0 auto}
+.arch-fan .af-trunk{position:absolute;left:50%;top:0;width:2px;height:11px;transform:translateX(-1px)}
+.arch-fan .af-bar{position:absolute;top:11px;height:1px}
+.arch-fan .af-drop{position:absolute;top:11px;width:2px;height:17px}
+.arch-agents{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.arch-svcs{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:10px;align-items:start}
+.svc-wrap{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.arch-svc{padding:8px 12px;border-radius:var(--border-radius-md,8px);text-align:center;min-width:72px}
+.arch-svc .ab-title{font-size:12px;margin-bottom:1px}
+.arch-svc .ab-sub{font-size:10px;line-height:1.35}
+.arch-state{padding:14px 18px;border-radius:var(--border-radius-lg,12px);text-align:left}
+.arch-state .ab-title{text-align:center;margin-bottom:10px}
+.as-row{font-size:11px;padding:5px 0;display:flex;align-items:baseline;gap:8px;border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.08))}
+.as-row:last-child{border-bottom:none}
+.as-key{font-family:monospace;font-size:11px;font-weight:500;color:var(--color-text-primary,#1a1a1a);white-space:nowrap}
+.as-val{font-size:10px;color:var(--color-text-tertiary,#999)}
+.ab-purple{background:rgba(83,74,183,.06);border:0.5px solid rgba(83,74,183,.18)}.ab-purple .ab-title{color:#534AB7}
+.ab-teal{background:rgba(29,158,117,.06);border:0.5px solid rgba(29,158,117,.18)}.ab-teal .ab-title{color:#0F6E56}
+.ab-blue{background:rgba(24,95,165,.06);border:0.5px solid rgba(24,95,165,.18)}.ab-blue .ab-title{color:#185FA5}
+.ab-amber{background:rgba(186,117,23,.06);border:0.5px solid rgba(186,117,23,.18)}.ab-amber .ab-title{color:#854F0B}
+.ab-coral{background:rgba(216,90,48,.06);border:0.5px solid rgba(216,90,48,.18)}.ab-coral .ab-title{color:#993C1D}
+.ab-pink{background:rgba(212,83,126,.06);border:0.5px solid rgba(212,83,126,.18)}.ab-pink .ab-title{color:#993556}
+.ab-gray{background:var(--color-background-secondary,#f5f5f3);border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.12))}
+.fan-c{background:var(--color-border-secondary,rgba(0,0,0,.2))}
 </style>
 
 <div class="st">
-<div class="mode-sw"><button class="on" id="mS" onclick="setMode('story')">Story mode</button><button id="mD" onclick="setMode('detail')">Detailed breakdown</button></div>
+<div class="mode-sw"><button class="on" id="mS" onclick="setMode('story')">Story mode</button><button id="mD" onclick="setMode('detail')">Detailed breakdown</button><button id="mA" onclick="setMode('arch')">Architecture</button></div>
 <div id="storyMode">
 <div class="scene active" id="sc0">
 <div class="hero"><div class="hero-num" id="heroNum">35</div><div class="hero-unit">days to release a service pack</div><div class="hero-sub">Scope freeze to GA — that's the active release window. But where does this time actually go? Let's follow a service pack engineer through a typical release cycle.</div><button class="nb p" onclick="goTo(1)">Follow the engineer &rarr;</button></div>
@@ -169,9 +204,9 @@ html,body{width:100%;display:flex;justify-content:center}
 
 <div class="scene" id="sc2">
 <div class="st-t">The plan</div><div class="st-h">Three interventions targeting every bottleneck</div>
-<div class="sol" style="border-left-color:#1D9E75"><div class="sh"><div class="si" style="background:#E1F5EE;color:#0F6E56">1</div><div class="sn">AI-powered build analyzer + RAG debugging</div></div><div class="sd">Eliminates blind log scanning. Centralized failure view, historical pattern matching, instant context.</div><div class="stag" style="background:#E1F5EE;color:#0F6E56">Targets: manual debugging, fragmented visibility, slow triage</div></div>
-<div class="sol" style="border-left-color:#185FA5"><div class="sh"><div class="si" style="background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)">2</div><div class="sn">Automated job creation via Claude / Cursor rules</div></div><div class="sd">12-16 hrs of manual setup becomes 3-5 hrs. Skills-based automation, repeatable.</div><div class="stag" style="background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)">Targets: manual job creation overhead</div></div>
-<div class="sol" style="border-left-color:#534AB7"><div class="sh"><div class="si" style="background:#EEEDFE;color:#534AB7">3</div><div class="sn">EC2 scaling — 20 to 100 nodes</div></div><div class="sd">More jobs simultaneously. Every iteration and re-iteration finishes faster.</div><div class="stag" style="background:#EEEDFE;color:#534AB7">Targets: sequential builds, long iterations, re-iteration cost</div></div>
+<div class="sol" style="border-left-color:#1D9E75"><div class="sh"><div class="si" style="background:#E1F5EE;color:#0F6E56">1</div><div class="sn">SP Agentic Studio</div></div><div class="sd">Eliminates blind log scanning. AI powered Analysis, Recommendation and Fix. Centralized failure view, historical pattern matching, instant context.</div><div class="stag" style="background:#E1F5EE;color:#0F6E56">Targets: manual debugging, fragmented visibility, slow triage</div></div>
+<div class="sol" style="border-left-color:#185FA5"><div class="sh"><div class="si" style="background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)">2</div><div class="sn">AI coauthored job creation via skills/rules</div></div><div class="sd">12-16 hrs of manual setup becomes 3-5 hrs. Skills-based automation, repeatable.</div><div class="stag" style="background:var(--color-background-info,#E6F1FB);color:var(--color-text-info,#185FA5)">Targets: manual job creation overhead</div></div>
+<div class="sol" style="border-left-color:#534AB7"><div class="sh"><div class="si" style="background:#EEEDFE;color:#534AB7">3</div><div class="sn">EC2 scaling — 20 to 100 nodes + job optimization</div></div><div class="sd">More jobs simultaneously. Optimized job configurations reduce build overhead. Every iteration and re-iteration finishes faster.</div><div class="stag" style="background:#EEEDFE;color:#534AB7">Targets: sequential builds, long iterations, re-iteration cost</div></div>
 <div style="margin-top:28px"><div class="st-t">Expected savings</div></div>
 <div class="waterfall">
 <div class="wf-row"><div class="wf-label">Job creation</div><div class="wf-bars"><div class="wf-bar" style="width:0%;background:#E24B4A" id="w0">14 hrs</div><div class="wf-bar" style="width:0%;background:#1D9E75" id="w0a">4 hrs</div></div><div class="wf-saved" id="ws0" style="opacity:0">&darr;60%</div></div>
@@ -196,6 +231,47 @@ html,body{width:100%;display:flex;justify-content:center}
 <div class="impact-card"><div class="ic-head"><div class="ic-title">Debugging</div><span class="pill pill-g">&darr;50%</span></div><div class="ic-nums"><span class="ic-before">~5 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">2–3 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:50%;background:#1D9E75"></div><div class="bar-seg" style="width:50%;background:rgba(226,75,74,.2)"></div></div></div>
 <div class="impact-card"><div class="ic-head"><div class="ic-title">Triaging</div><span class="pill pill-a">&darr;25%</span></div><div class="ic-nums"><span class="ic-before">~2 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">1–1.5 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:70%;background:#1D9E75"></div><div class="bar-seg" style="width:30%;background:rgba(226,75,74,.2)"></div></div></div>
 <div class="impact-card"><div class="ic-head"><div class="ic-title">Build time</div><span class="pill pill-a">&darr;20%</span></div><div class="ic-nums"><span class="ic-before">~19 hrs</span><span style="color:var(--color-text-tertiary,#999)">&rarr;</span><span class="ic-after">~15 hrs</span></div><div class="bar-track"><div class="bar-seg" style="width:79%;background:#1D9E75"></div><div class="bar-seg" style="width:21%;background:rgba(226,75,74,.2)"></div></div></div></div>
+<div style="text-align:center;margin:24px 0"><button class="nb g" onclick="setMode('story')">Back to story mode</button></div>
+</div>
+
+<div id="archMode" style="display:none">
+<div class="arch-section">
+<div class="st-t">System architecture</div>
+<div class="arch-title">SP Agentic Studio</div>
+<div class="arch-sub">How the three agents, orchestrator, and integrations connect</div>
+
+<div class="arch-layer"><div class="arch-box ab-purple"><div class="ab-title">SP Agentic Studio (browser)</div><div class="ab-sub">Chainlit UI · Adobe Spectrum surface</div></div></div>
+
+<div class="arch-conn"><div class="ac-line fan-c"></div></div>
+
+<div class="arch-layer"><div class="arch-box ab-gray"><div class="ab-title">Chainlit handler layer</div><div class="ab-sub">Orchestrator — wires agents to chat events</div></div></div>
+
+<div class="arch-fan" style="width:100%"><div class="af-trunk fan-c"></div><div class="af-bar fan-c" style="left:16.5%;right:16.5%"></div><div class="af-drop fan-c" style="left:16.5%"></div><div class="af-drop fan-c" style="left:50%;transform:translateX(-1px)"></div><div class="af-drop fan-c" style="right:16.5%"></div></div>
+
+<div class="arch-layer arch-agents">
+  <div class="arch-box ab-teal"><div class="ab-title">Analysis agent</div><div class="ab-sub">Google ADK + Jenkins console</div></div>
+  <div class="arch-box ab-blue"><div class="ab-title">Recommendation agent</div><div class="ab-sub">FluffyJaws two-pass</div></div>
+  <div class="arch-box ab-amber"><div class="ab-title">Execution agent</div><div class="ab-sub">Decision LlmAgent + per-action handlers</div></div>
+</div>
+
+<div class="arch-fan" style="width:100%"><div class="af-trunk fan-c" style="display:none"></div><div class="af-bar fan-c" style="left:16.5%;right:16.5%"></div><div class="af-drop fan-c" style="left:16.5%"></div><div class="af-drop fan-c" style="left:50%;transform:translateX(-1px)"></div><div class="af-drop fan-c" style="right:25%"></div><div class="af-drop fan-c" style="right:16.5%"></div></div>
+
+<div class="arch-layer arch-svcs">
+  <div style="text-align:center"><div class="svc-wrap"><div class="arch-svc ab-teal"><div class="ab-title">Jenkins</div><div class="ab-sub">REST + python-jenkins</div></div></div></div>
+  <div style="text-align:center"><div class="svc-wrap"><div class="arch-svc ab-blue"><div class="ab-title">FluffyJaws</div><div class="ab-sub">Corp wiki RAG service</div></div></div></div>
+  <div style="text-align:center"><div class="svc-wrap"><div class="arch-svc ab-amber"><div class="ab-title">JIRA</div><div class="ab-sub">DC</div></div><div class="arch-svc ab-amber"><div class="ab-title">GH</div><div class="ab-sub">EE PAT</div></div><div class="arch-svc ab-coral"><div class="ab-title">Confluence</div><div class="ab-sub">&nbsp;</div></div><div class="arch-svc ab-pink"><div class="ab-title">Slack</div><div class="ab-sub">Webhook</div></div></div></div>
+</div>
+
+<div class="arch-conn"><div class="ac-line fan-c"></div></div>
+
+<div class="arch-layer"><div class="arch-state ab-gray">
+  <div class="ab-title">Persistent state</div>
+  <div class="as-row"><span class="as-key">_analysis_cache</span><span class="as-val">Process-lifetime, by (job, build) key</span></div>
+  <div class="as-row"><span class="as-key">cl.user_session</span><span class="as-val">Per-thread Chainlit state — status payload TTL, view msgs</span></div>
+  <div class="as-row"><span class="as-key">wiki/script_fix_audit.json</span><span class="as-val">Append-only</span></div>
+</div></div>
+
+</div>
 <div style="text-align:center;margin:24px 0"><button class="nb g" onclick="setMode('story')">Back to story mode</button></div>
 </div>
 </div>
@@ -302,8 +378,10 @@ setTimeout(function(){document.getElementById(d.id).style.width=d.w;setTimeout(f
 function setMode(m){
 document.getElementById('storyMode').style.display=m==='story'?'':'none';
 document.getElementById('detailMode').style.display=m==='detail'?'':'none';
+document.getElementById('archMode').style.display=m==='arch'?'':'none';
 document.getElementById('mS').classList.toggle('on',m==='story');
-document.getElementById('mD').classList.toggle('on',m==='detail')}
+document.getElementById('mD').classList.toggle('on',m==='detail');
+document.getElementById('mA').classList.toggle('on',m==='arch')}
 
 var obs=new IntersectionObserver(function(e){if(e[0].isIntersecting&&!counted){counted=true;var v=0;var s=function(){v+=1;if(v>35)v=35;document.getElementById('heroNum').textContent=v;if(v<35)requestAnimationFrame(s)};requestAnimationFrame(s)}});
 obs.observe(document.getElementById('heroNum'));
